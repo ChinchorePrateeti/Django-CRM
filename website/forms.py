@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
+from .models import Record
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label = '', widget = forms.TextInput(attrs= {'class' : 'form-control', 'placeholder': 'Email Address'}))
@@ -9,7 +10,9 @@ class SignUpForm(UserCreationForm):
     #grabbed these 3 things
 
     class Meta:
+        #what model is used? Record.
         model = User
+        #below is the one way to designate the fields
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
 
 
@@ -30,3 +33,20 @@ class SignUpForm(UserCreationForm):
         self.fields['password2'].widget.attrs['placeholder'] = 'Confirm Password'
         self.fields['password2'].label = ''
         self.fields['password2'].help_text = '<span class= "form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'
+
+
+
+class AddRecordForm(forms.ModelForm):
+    first_name = forms.CharField(required=True, label = '',widget=forms.widgets.TextInput(attrs={"placeholder":"First Name", "class":"form-control"}))
+    last_name = forms.CharField(required=True, label = '',widget=forms.widgets.TextInput(attrs={"placeholder":"Last Name", "class":"form-control"}))
+    email = forms.CharField(required=True, label = '',widget=forms.widgets.TextInput(attrs={"placeholder":"Email", "class":"form-control"}))
+    phone = forms.CharField(required=True, label = '',widget=forms.widgets.TextInput(attrs={"placeholder":"Phone", "class":"form-control"}))
+    address = forms.CharField(required=True, label = '',widget=forms.widgets.TextInput(attrs={"placeholder":"Address", "class":"form-control"}))
+    state = forms.CharField(required=True, label = '',widget=forms.widgets.TextInput(attrs={"placeholder":"State", "class":"form-control"}))
+    city = forms.CharField(required=True, label = '',widget=forms.widgets.TextInput(attrs={"placeholder":"City", "class":"form-control"}))
+    zipcode = forms.CharField(required=True, label = '',widget=forms.widgets.TextInput(attrs={"placeholder":"Zipcode", "class":"form-control"}))
+
+    class Meta:
+        model = Record
+        #below is another way of designating fields
+        exclude = ("user",)

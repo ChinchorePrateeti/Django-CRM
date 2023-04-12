@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import SignUpForm
+from .forms import SignUpForm, AddRecordForm
 from .models import Record
 
 
@@ -48,3 +48,51 @@ def register_user(request):
         form = SignUpForm()
         return render(request, 'register.html', {'form': form})
     return render(request, 'register.html', {'form': form})
+
+
+def customer_record(request, pk):
+    if request.user.is_authenticated:
+        customer_record = Record.objects.get(id=pk)
+        return render(request, 'record.html', {'customer_record': customer_record})
+    else:
+        messages.success(request, "You need to login first..")
+        return redirect('home')
+
+def customer_record_delete(request, pk):
+    if request.user.is_authenticated:
+        customer_record_delete = Record.objects.get(id=pk)
+        customer_record_delete.delete()
+        messages.success(request, "Your selected ID's record details deleted successfully...")
+        return redirect("home")
+    else:
+        messages.success(request, "You need to login to delete the record!!!")
+        return redirect('home')
+
+def customer_record_add(request):
+    form = AddRecordForm(request.POST or None)
+
+    # meaning logged in
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Record Added Successfuly")
+                return redirect('home')
+        return render(request, 'record_add.html', {'form':form})
+    else:
+        messages.success(request, "You need to login first......")
+        return redirect('home')
+
+def record_update(request, pk):
+    if request.user.is_authenticated:
+        record_update = Record.objects.get(id=pk)
+        form = AddRecordForm(request.POST or None, instance= record_update)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your record is updated successfully.")
+            return redirect('home')
+        return render(request, 'record_update.html', {'form':form})
+
+    else:
+        messages.success(request, "You need to login first!!")
+        return redirect('home')
